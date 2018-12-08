@@ -4,3 +4,5 @@ In this repository Alberto and I will add useful materials for the homework 16 o
 
 ## Contacts
 Should you have any doubts, don't esitate to contact us:
+[Alberto Anselmo](mailto:Alberto.Anselmo@eurecom.fr)
+[Giulio Roggero](mailto:Giulio.Roggero@eurecom.fr)
