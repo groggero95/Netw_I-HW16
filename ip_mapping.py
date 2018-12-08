@@ -1,5 +1,4 @@
 #!/usr/bin/python
-## Many thanks to Rehan Rajput for helping us with the usage of GMaps API
 import os
 import socket
 import geocoder
@@ -8,25 +7,37 @@ import csv
 import sys
 import socket
 import geoip2.database
+import sqlite3
+import pandas.io.sql as sql
 
-#Pu your own API keys here: get it -> https://cloud.google.com/maps-platform/
+## Many thanks to Rehan Rajput for helping us with the usage of GMaps API
+
+#Put your own API keys here: get it -> https://cloud.google.com/maps-platform/
 # WARNING: without API keys, it won't work!
 API_KEY = "AIzaSyB5a50hwGReYBheMsFwcrlPVBp8BU_g8Uk"
 EURECOM=(43.614452, 7.071345)
-reader_city = geoip2.database.Reader('/home/roggero/Downloads/GeoIP_DB/GeoLite2-City.mmdb')
-reader_asn = geoip2.database.Reader('/home/roggero/Downloads/GeoIP_DB/GeoLite2-ASN.mmdb')
+reader_city = geoip2.database.Reader('./GeoLite2-City.mmdb')
+reader_asn = geoip2.database.Reader('./GeoLite2-ASN.mmdb')
+
+
+# Convert the SQL database into a more easily manageable .CSV file
+def SQLtoCSV(filein='cookies.sqlite', fileout='out.csv'):
+	con = sqlite.connect(filein)
+	table = sql.read_sql('select * from moz_cookies', con)
+	table.to_csv(fileout)
+
 
 # Open the .csv file containing the DB of the host of the cookies
 # Input the file name, return a list of IPs as set so that duplicated elements are not contained
-def DBtoIPs(filename):
+def DBtoIPs(filename='out.csv'):
 	IPs=[]
 	with open((str(filename))) as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		for i, line in enumerate(csv_reader):
 			if i != 0:
 				try:
-    					IPs.append(socket.gethostbyname(line[1]))
-    				except socket.gaierror:
+    					IPs.append(socket.gethostbyname(line[2]))
+    				except socket.gaierror, IndexError:
     					pass
     	return set(IPs)
 
@@ -95,9 +106,9 @@ def PlotMap(positions,center=(),filename="map.html"):
     gmap.draw('./' + filename)
    
 if __name__ == "__main__":
-	file=(sys.argv[1])
-	IP_list=DBtoIPs(file)
-	GEO_pos=FromIPtoLatLon(IP_list)
+	filesql=(sys.argv[1])
+	IP_list=DBtoIPs()
+	GEO_pos=list(FromIPtoLatLon(IP_list))
 	print GEO_pos
 	PlotMap(GEO_pos, EURECOM)
 	
