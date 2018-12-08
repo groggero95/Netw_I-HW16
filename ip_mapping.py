@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ## Many thanks to Rehan Rajput for helping us with the usage of GMaps API
 import os
 import socket
