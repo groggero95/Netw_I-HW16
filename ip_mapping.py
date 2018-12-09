@@ -5,6 +5,7 @@ import geocoder
 import gmplot
 import csv
 import sys
+import webbrowser
 import socket
 import geoip2.database
 import sqlite3
@@ -106,9 +107,12 @@ def PlotMap(positions,center=(),filename="map.html"):
     gmap.draw('./' + filename)
    
 if __name__ == "__main__":
+	map_name='map_cookies.html'
 	filesql=(sys.argv[1])
 	IP_list=DBtoIPs()
 	GEO_pos=list(FromIPtoLatLon(IP_list))
 	print GEO_pos
-	PlotMap(GEO_pos, EURECOM)
+	PlotMap(GEO_pos, EURECOM, map_name)
+	map_open = 'file:///'+os.getcwd()+'/' + map_name
+	webbrowser.open_new_tab(map_open)
 	
