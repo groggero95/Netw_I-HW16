@@ -22,9 +22,12 @@ reader_asn = geoip2.database.Reader('./GeoLite2-ASN.mmdb')
 
 
 # Convert the SQL database into a more easily manageable .CSV file
-def SQLtoCSV(filein='cookies.sqlite', fileout='out.csv'):
+def SQLtoCSV(browser='firefox', filein='cookies.sqlite', fileout='out.csv'):
 	con = sqlite3.connect(filein)
-	table = sql.read_sql('select * from moz_cookies', con)
+	if browser=='firefox':
+		table = sql.read_sql('select baseDomain from moz_cookies', con)
+	elif browser=='chrome':
+		table=sql.read_sql('select host_key from cookies', con)
 	table.to_csv(fileout)
 
 
@@ -35,9 +38,11 @@ def DBtoIPs(filename='out.csv'):
 	with open((str(filename))) as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		for i, line in enumerate(csv_reader):
+			print line
 			if i != 0:
-				try:
-    					IPs.append(socket.gethostbyname(line[2]))
+				try:	
+					print len(line)
+    					IPs.append(socket.gethostbyname(line[1]))
     				except socket.gaierror, IndexError:
     					pass
     	return set(IPs)
@@ -108,8 +113,18 @@ def PlotMap(positions,center=(),filename="map.html"):
    
 if __name__ == "__main__":
 	map_name='map_cookies.html'
-	filesql=(sys.argv[1])
-        SQLtoCSV(filesql)
+	
+	if len(sys.argv) < 2:
+		filesql='cookies.sqlite'
+		browser='firefox'
+	elif len(sys.argv) == 2:
+		filesql=(sys.argv[1])
+		browser='firefox'
+	else:
+		filesql=(sys.argv[1])
+		browser=sys.argv[2]
+        
+        SQLtoCSV(browser, filesql)
 	IP_list=DBtoIPs()
 	GEO_pos=list(FromIPtoLatLon(IP_list))
 	print GEO_pos
