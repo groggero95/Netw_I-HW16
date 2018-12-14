@@ -23,7 +23,7 @@ reader_asn = geoip2.database.Reader('./GeoLite2-ASN.mmdb')
 
 # Convert the SQL database into a more easily manageable .CSV file
 def SQLtoCSV(filein='cookies.sqlite', fileout='out.csv'):
-	con = sqlite.connect(filein)
+	con = sqlite3.connect(filein)
 	table = sql.read_sql('select * from moz_cookies', con)
 	table.to_csv(fileout)
 
@@ -109,6 +109,7 @@ def PlotMap(positions,center=(),filename="map.html"):
 if __name__ == "__main__":
 	map_name='map_cookies.html'
 	filesql=(sys.argv[1])
+        SQLtoCSV(filesql)
 	IP_list=DBtoIPs()
 	GEO_pos=list(FromIPtoLatLon(IP_list))
 	print GEO_pos
