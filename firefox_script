@@ -1,6 +1,5 @@
 #!/bin/bash
-firefox -url www.google.fr wwww.facebook.com www.amazon.fr www.lemonde.fr my.eurecom.fr 
-killall firefox
+firefox -url www.google.fr wwww.facebook.com www.amazon.fr www.lemonde.fr my.eurecom.fr
 
 
 
