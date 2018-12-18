@@ -15,7 +15,7 @@ import pandas.io.sql as sql
 
 #Put your own API keys here: get it -> https://cloud.google.com/maps-platform/
 # WARNING: without API keys, it won't work!
-API_KEY = "AIzaSyB5a50hwGReYBheMsFwcrlPVBp8BU_g8Uk"
+API_KEY = ""
 EURECOM=(43.614452, 7.071345)
 reader_city = geoip2.database.Reader('./GeoLite2-City.mmdb')
 reader_asn = geoip2.database.Reader('./GeoLite2-ASN.mmdb')
@@ -38,13 +38,15 @@ def DBtoIPs(filename='out.csv'):
 	with open((str(filename))) as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		for i, line in enumerate(csv_reader):
-			print line
 			if i != 0:
 				try:	
-					print len(line)
-    					IPs.append(socket.gethostbyname(line[1]))
+					if line[1][1]=='.':
+    						IPs.append(socket.gethostbyname(line[1][1:]))
+    					else:
+    						IPs.append(socket.gethostbyname(line[1]))
     				except socket.gaierror, IndexError:
     					pass
+    		
     	return set(IPs)
 
 # Converts IP -> Geocode, using GeoIP2 database
@@ -126,8 +128,9 @@ if __name__ == "__main__":
         
         SQLtoCSV(browser, filesql)
 	IP_list=DBtoIPs()
+	print len(IP_list)
 	GEO_pos=list(FromIPtoLatLon(IP_list))
-	print GEO_pos
+	print len(GEO_pos)
 	PlotMap(GEO_pos, EURECOM, map_name)
 	map_open = 'file:///'+os.getcwd()+'/' + map_name
 	webbrowser.open_new_tab(map_open)
